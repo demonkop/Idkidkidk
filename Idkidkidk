@@ -1,0 +1,81 @@
+-- UI Variables
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "LightSkillButtons"
+ScreenGui.ResetOnSpawn = false
+
+-- Skill data
+local skills = {
+    {
+        Name = "Light Combo",
+        Args = {
+            [1] = "L",
+            [2] = "FateCombo",
+            [3] = CFrame.new(1084.4871826171875, 178.1822509765625, -108.01515197753906, 0.22164250910282135, -0.4376937448978424, 0.8713775873184204, -0, 0.8936033248901367, 0.44885772466659546, -0.9751279950141907, -0.09948594868183136, 0.19806046783924103)
+        }
+    },
+    {
+        Name = "Light Storm",
+        Args = {
+            [1] = "L",
+            [2] = "FateStorm",
+            [3] = CFrame.new(1089.1488037109375, 179.42274475097656, -105.67567443847656, -0.026191523298621178, -0.5533391237258911, 0.8325442671775818, -0, 0.8328299522399902, 0.5535290241241455, -0.9996569156646729, 0.014497768133878708, -0.021813087165355682)
+        }
+    },
+    {
+        Name = "Light Rush",
+        Args = {
+            [1] = "L",
+            [2] = "FateRush",
+            [3] = CFrame.new(1083.837890625, 178.5799560546875, -111.69754028320312, 0.028899850323796272, -0.5151702761650085, 0.8566005825996399, -0, 0.8569585084915161, 0.5153855681419373, -0.9995822906494141, -0.01489456556737423, 0.024765973910689354)
+        }
+    },
+    {
+        Name = "Light Heal",
+        Args = {
+            [1] = "L",
+            [2] = "FateHeal",
+            [3] = CFrame.new(1105.1871337890625, 181.4622039794922, -102.9483642578125, 0.8325151205062866, -0.3775973618030548, 0.40538719296455383, -1.4901159417490817e-08, 0.731742799282074, 0.6815809011459351, -0.5540022850036621, -0.5674263834953308, 0.6091870069503784)
+        }
+    },
+    {
+        Name = "Udah Kecewa Ama Dunia",
+        Args = {
+            [1] = "Beserk",
+            [2] = "AlterTransformation",
+            [3] = Vector3.new(1049.675048828125, 180.55587768554688, -164.47450256347656)
+        }
+    }
+}
+
+-- Function to create button
+local function createButton(skill, index)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 120, 0, 20)
+    btn.Position = UDim2.new(1, -130, 1, -30 - (25 * (index - 1)))
+    btn.AnchorPoint = Vector2.new(0, 1)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.fromRGB(255, 0, 0)
+    btn.Text = skill.Name
+    btn.TextScaled = true
+    btn.Name = skill.Name
+    btn.Parent = ScreenGui
+    btn.Active = true
+    btn.Draggable = true
+    btn.BorderSizePixel = 0
+    btn.AutoButtonColor = true
+    btn.ZIndex = 10
+
+    btn.MouseButton1Click:Connect(function()
+        local args = skill.Args
+        for _ = 1, 3 do
+            task.spawn(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Skill"):FireServer(unpack(args))
+            end)
+        end
+    end)
+end
+
+-- Generate all buttons
+for i, skill in ipairs(skills) do
+    createButton(skill, i)
+end
