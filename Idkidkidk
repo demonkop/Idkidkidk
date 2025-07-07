@@ -1,81 +1,110 @@
--- UI Variables
-local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "LightSkillButtons"
-ScreenGui.ResetOnSpawn = false
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("ReplicatedStorage")
 
--- Skill data
-local skills = {
+-- Fungsi untuk menjalankan skill 10x serentak
+local function fireSkill(args)
+    for _ = 1, 10 do
+        task.spawn(function()
+            RS:WaitForChild("Events"):WaitForChild("Skill"):FireServer(unpack(args))
+        end)
+    end
+end
+
+-- Pastikan ScreenGui ada
+local gui = Instance.new("ScreenGui")
+gui.Name = "SkillButtonsGUI"
+gui.ResetOnSpawn = false
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Fungsi untuk membuat tombol kecil yang bisa digerakkan
+local function createButton(name, position, args)
+    local btn = Instance.new("TextButton")
+    btn.Name = name
+    btn.Size = UDim2.new(0, 80, 0, 20)
+    btn.Position = position
+    btn.BackgroundColor3 = Color3.new(1, 1, 1) -- putih
+    btn.TextColor3 = Color3.new(1, 0, 0) -- merah
+    btn.Text = name
+    btn.Font = Enum.Font.GothamBold
+    btn.TextScaled = true
+    btn.Draggable = true
+    btn.Active = true
+    btn.Selectable = true
+    btn.Parent = gui
+
+    btn.MouseButton1Click:Connect(function()
+        fireSkill(args)
+    end)
+
+    return btn
+end
+
+-- Data semua tombol
+local buttons = {
     {
-        Name = "Light Combo",
-        Args = {
+        name = "Light Combo",
+        args = {
             [1] = "L",
             [2] = "FateCombo",
-            [3] = CFrame.new(1084.487, 178.182, -108.015, 0.2216, -0.4376, 0.8713, 0, 0.8936, 0.4488, -0.9751, -0.0994, 0.1980)
+            [3] = CFrame.new(-9445.2666015625, 182.29251098632812, -581.1408081054688, 0.7486314177513123, -0.313987672328949, 0.5839201211929321, 0, 0.8807421922683716, 0.4735959470272064, -0.6629863977432251, -0.3545488119125366, 0.6593512892723083)
         }
     },
     {
-        Name = "Light Storm",
-        Args = {
-            [1] = "L",
-            [2] = "FateStorm",
-            [3] = CFrame.new(1089.148, 179.422, -105.675, -0.0261, -0.5533, 0.8325, 0, 0.8328, 0.5535, -0.9996, 0.0144, -0.0218)
-        }
-    },
-    {
-        Name = "Light Rush",
-        Args = {
+        name = "Light Rush",
+        args = {
             [1] = "L",
             [2] = "FateRush",
-            [3] = CFrame.new(1083.837, 178.579, -111.697, 0.0288, -0.5151, 0.8566, 0, 0.8569, 0.5153, -0.9995, -0.0148, 0.0247)
+            [3] = CFrame.new(-9362.6962890625, 183.48536682128906, -518.9620361328125, 0.7823663949966431, -0.3119869828224182, 0.5390427112579346, 0, 0.8654892444610596, 0.5009276270866394, -0.6228184700012207, -0.3919089436531067, 0.6771296858787537)
         }
     },
     {
-        Name = "Light Heal",
-        Args = {
+        name = "Light Storm",
+        args = {
+            [1] = "L",
+            [2] = "FateStorm",
+            [3] = CFrame.new(-9272.751953125, 188.8236846923828, -479.4136962890625, 0.22465237975120544, -0.889286994934082, 0.39837151765823364, 0, 0.4088214039802551, 0.9126143455505371, -0.9744389653205872, -0.2050209790468216, 0.09184270352125168)
+        }
+    },
+    {
+        name = "Light Heal",
+        args = {
             [1] = "L",
             [2] = "FateHeal",
-            [3] = CFrame.new(1105.187, 181.462, -102.948, 0.8325, -0.3775, 0.4053, 0, 0.7317, 0.6815, -0.5540, -0.5674, 0.6091)
+            [3] = CFrame.new(-9292.91796875, 188.54103088378906, -520.6845092773438, 0.8138408660888672, -0.25058096647262573, 0.5242826342582703, 0, 0.9022433757781982, 0.43122732639312744, -0.5810878872871399, -0.3509504199028015, 0.7342824935913086)
         }
     },
     {
-        Name = "Udah Kecewa Ama Dunia",
-        Args = {
+        name = "Udah Kecewa Ama Dunia",
+        args = {
             [1] = "Beserk",
             [2] = "AlterTransformation",
-            [3] = Vector3.new(1049.675, 180.555, -164.474)
+            [3] = Vector3.new(-9323.115234375, 183.6592254638672, -498.71575927734375)
         }
     }
 }
 
--- Function to create button
-local function createButton(skill, index)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 150, 0, 25)
-    btn.Position = UDim2.new(1, -10, 0, 10 + (30 * (index - 1))) -- pojok kanan atas
-    btn.AnchorPoint = Vector2.new(1, 0) -- anchor ke kanan atas
-    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextColor3 = Color3.fromRGB(255, 0, 0)
-    btn.Text = skill.Name
-    btn.TextScaled = true
-    btn.Name = skill.Name
-    btn.Parent = ScreenGui
-    btn.Active = true
-    btn.Draggable = true
-    btn.BorderSizePixel = 0
-    btn.AutoButtonColor = true
-    btn.ZIndex = 10
-
-    btn.MouseButton1Click:Connect(function()
-        local args = skill.Args
-        for _ = 1, 3 do
-            task.spawn(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Skill"):FireServer(unpack(args))
-            end)
-        end
-    end)
+-- Buat semua tombol dengan posisi menumpuk ke bawah
+local lastButton
+for i, button in ipairs(buttons) do
+    local offsetY = (i - 1) * 25
+    lastButton = createButton(
+        button.name,
+        UDim2.new(1, -90, 0, 10 + offsetY), -- pojok kanan atas
+        button.args
+    )
 end
 
--- Generate all buttons
-for i, skill in ipairs(skills) do
-    createButton(skill, i)
+-- Tambahkan label kecil di bawah tombol terakhir
+if lastButton then
+    local credit = Instance.new("TextLabel")
+    credit.Name = "CreditLabel"
+    credit.Size = UDim2.new(0, 80, 0, 15)
+    credit.Position = lastButton.Position + UDim2.new(0, 0, 0, 25)
+    credit.BackgroundTransparency = 1
+    credit.TextColor3 = Color3.new(1, 1, 1)
+    credit.TextStrokeTransparency = 0
+    credit.Text = "made by Demon_Ignis"
+    credit.Font = Enum.Font.Gotham
+    credit.TextScaled = true
+    credit.Parent = gui
 end
